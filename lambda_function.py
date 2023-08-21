@@ -4,13 +4,11 @@ import json
 def lambda_handler(event, context):
     ec2_client = boto3.client('ec2')
     
-    # Get all volumes
     all_volumes = ec2_client.describe_volumes()
     
     unattached_volumes = [v for v in all_volumes['Volumes'] if not v['Attachments']]
     non_encrypted_volumes = [v for v in all_volumes['Volumes'] if not v['Encrypted']]
     
-    # Get non-encrypted snapshots
     non_encrypted_snapshots = ec2_client.describe_snapshots(Filters=[{'Name': 'encrypted', 'Values': ['false']}])
     
     metrics = {
